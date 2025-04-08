@@ -4,6 +4,8 @@
 #include <chrono>
 #include <ctime>
 
+#include "Telemetry.hpp"
+
 #ifdef _WIN34
 #include <windows.h>
 #else
@@ -17,6 +19,21 @@ void clearScreen()
 #else
     system("clear");
 #endif
+}
+
+void renderEPSPanel(const EPSData& eps) {
+    using namespace std;
+
+    cout << "\n[EPS PANEL] ELECTRICAL POWER SYSTEM\n";
+    cout << "+---------------------+------------+--------+\n";
+    cout << "| Parameter           | Value      | Units  |\n";
+    cout << "+---------------------+------------+--------+\n";
+    cout << "| Battery Voltage     | " << setw(10) << fixed << setprecision(2) << eps.voltage << " | V      |\n";
+    cout << "| Battery Current     | " << setw(10) << eps.current << " | A      |\n";
+    cout << "| Battery Charge      | " << setw(10) << eps.chargePercent << " | %      |\n";
+    cout << "| Solar Panel Input   | " << setw(10) << eps.solarInput << " | W      |\n";
+    cout << "| Time Remaining      | " << setw(10) << eps.timeRemaining << " | min    |\n";
+    cout << "+---------------------+------------+--------+\n";
 }
 
 
