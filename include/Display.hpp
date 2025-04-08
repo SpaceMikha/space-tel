@@ -5,5 +5,6 @@
 
 //function to clear terminal and display data
 void renderTelemetry(const Telemetry& data);
+void renderEPSPanel(const EPSData& eps);
 
 #endif
