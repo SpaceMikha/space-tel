@@ -17,20 +17,34 @@ const std::string BLUE = "\033[34m";
 const std::string CYAN = "\033[36m";
 const std::string BOLD = "\033[1m";
 
+//role output colors
+std::string getRoleColor(const std::string & role){
+    if (role == "Engineer") return CYAN;
+    if (role == "Lead") return BOLD + RED;
+    if (role == "Observer") return BLUE;
+    if (role == "Researcher") return YELLOW;
+    return RESET;
+}
+
 
 struct User {
     std::string name;
     std::string id;
+    std::string role;
 };
 
 User authenticateUser(){
     User user;
     std::cout << "=== AUTHENTICATION REQUIRED ===\n";
+
     std::cout << "Enter your name: ";
     std::getline(std::cin, user.name);
 
     std::cout << "Enter your ID: ";
     std::getline(std::cin, user.id);
+
+    std::cout << "Enter your role (Lead / Engineer / Observer / Researcher): ";
+    std::getline(std::cin, user.role);
 
     std::cout << "Authenticating";
 
@@ -46,6 +60,8 @@ User authenticateUser(){
 void startupSequence(const User& user){
     using namespace std::chrono_literals;
 
+    std::string roleColor = getRoleColor(user.role);
+
     std::vector<std::string> steps = {
         BLUE + "[BOOT]" + RESET + " Initializing Spacecraft Telemetry System...",
         YELLOW + "[SYSCHK]" + RESET + " Checking onboard diagnostics...",
@@ -53,7 +69,7 @@ void startupSequence(const User& user){
         CYAN + "[COMM]" + RESET + " Link established. Signal strength: " + GREEN + "GOOD" + RESET + ".",
         BLUE + "[INIT]" + RESET + " Loading telemetry modules...",
         RED + "[SEC]" + RESET + " Authenticating user: " + user.name + " [ID: " + user.id + "]...",
-        GREEN + "[SEC]" + RESET + " Access granted.",
+        GREEN + "[SEC]" + RESET + " Access granted. Welcome, " + user.name + "you are a: " + roleColor + user.role + RESET + ".",
         BLUE + "[CONF]" + RESET + " Loading system configuration...",
         GREEN + "[ENG]" + RESET + " Engine sensors calibrated.",
         GREEN + "[ENV]" + RESET + " Environmental systems stable.",
