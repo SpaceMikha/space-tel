@@ -6,6 +6,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 // ANSI color codes
 const std::string RESET = "\033[0m";
@@ -28,6 +31,33 @@ std::string getRoleColor(const std::string &role)
     if (role == "Researcher")
         return YELLOW;
     return RESET;
+}
+
+bool kbhit() {
+    termios oldt, newt;
+    int ch;
+    int oldf;
+
+    // Get current terminal settings
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO); // disable buffering
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+    ch = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // restore settings
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+    if (ch != EOF) {
+        ungetc(ch, stdin); // put the char back in buffer
+        return true;
+    }
+
+    return false;
 }
 
 struct User
@@ -82,7 +112,7 @@ void startupSequence(const User &user)
         GREEN + "[ENV]" + RESET + " Environmental systems stable.",
         GREEN + "[INFO]" + RESET + " All systems nominal.",
         "",
-        "T-minus 3 seconds to live data stream..."};
+        "Data stream will be live in:"};
 
     for (const auto &line : steps)
     {
@@ -123,27 +153,50 @@ void showMissionPatch()
 
 int main()
 {
-
     User user = authenticateUser();
 
     showMissionPatch();
     startupSequence(user);
 
+    int currentPage = 1;
+
+    EPSData eps = {28.5f, 3.1f, 100.0f, 110.0f, 66.0f};
     Telemetry state = {
-        420.0f,          // alt
-        7.2f,            // vel
-        100.0f,          // bat
-        25.0f,           // temp
-        0.0f, 0.0f, 0.0f // putch, yaw, roll
-    };
+        420.0f, 7.2f, 100.0f, 25.0f,
+        0.0f, 0.0f, 0.0f};
 
     while (true)
     {
-        Telemetry data = generateTelemetry(state);
-        renderTelemetry(data);
+        system("clear");
 
-        // Wait for 10 seconds
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+     
+        eps = generateEPSData(eps);
+        state = generateTelemetry(state);
+
+        // render based on current page
+        switch (currentPage)
+        {
+        case 1:
+            renderEPSPanel(eps);
+            break;
+        case 2:
+            renderTelemetry(state); 
+            break;
+        }
+
+        std::cout << "\n[INFO] Press 1 for EPS Panel, 2 for Telemetry View\n";
+
+    
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        //idk if this will work
+        if (kbhit()) {
+            char key = getchar();
+            if (key == '1') currentPage = 1;
+            else if (key == '2') currentPage = 2;
+            else if (key == 'q') break; 
+        }
+
     }
 
     return 0;
