@@ -13,7 +13,18 @@ struct Telemetry{
     float pitch, yaw, roll; //orientation in degress
 };
 
+struct EPSData{
+    float voltage;
+    float current;
+    float chargePercent;
+    float solarInput;
+    float timeRemaining;
+};
+
 // function to simulate random telemetry data
 Telemetry generateTelemetry(const Telemetry& previous);
+
+// simulate next eps reading
+EPSData generateEPSData(const EPSData& previous);
 
 #endif
