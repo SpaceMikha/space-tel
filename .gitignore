@@ -1,0 +1,4 @@
+# Ignore compiled binary
+telemetry
+telemetry.exe
+*.o
