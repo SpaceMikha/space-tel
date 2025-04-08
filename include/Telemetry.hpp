@@ -24,7 +24,7 @@ struct EPSData{
 // function to simulate random telemetry data
 Telemetry generateTelemetry(const Telemetry& previous);
 
-// simulate next eps reading
+// eps reading
 EPSData generateEPSData(const EPSData& previous);
 
 #endif
