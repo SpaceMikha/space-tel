@@ -14,6 +14,6 @@ struct Telemetry{
 };
 
 // function to simulate random telemetry data
-Telemetry generateTelemetry();
+Telemetry generateTelemetry(const Telemetry& previous);
 
 #endif
