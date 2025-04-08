@@ -1,6 +1,8 @@
 #ifndef TELEMETRY_HPP
 #define TTELEMETRY_HPP
 
+#pragma once
+
 #include <string>
 
 struct Telemetry{
